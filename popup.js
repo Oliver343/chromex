@@ -1,28 +1,14 @@
 const baseURL = "https://bug-free-dollop-94rw6v5767gfg64-3001.app.github.dev/"
-let loggedInControl = false
 
-function logginToggle (recievedToken) {
-    loggedInControl = !loggedInControl
-    document.getElementById("loginBox").style.display = loggedInControl ? "none" : "inherit"
-    document.getElementById('tokenBox').value = recievedToken
-    localStorage.setItem("token", recievedToken);
-}
-
-function submitButtonFunc() {
-    const email = document.getElementById('emailInput').value;
-    const password = document.getElementById('passwordInput').value;
-    let successCheck = false
-    
-    if (loggedInControl) {
-        logginToggle (" ")
-    } else {
-        fetch( baseURL + "api/token", {
+function userLogin (email, password) {
+    return new Promise((resolve) => {
+        let successCheck = false
+        fetch(baseURL + "api/token", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({email: email, password: password}),
         })
         .then((recieved) => {
-            console.log(recieved.ok)
             if (recieved.ok) {
                 successCheck = true
             } else {
@@ -32,24 +18,52 @@ function submitButtonFunc() {
         })
         .then((data) => {
             if (successCheck) {
-                logginToggle (data["access_token"])
+                localStorage.setItem("token", data["access_token"]);
+                resolve(true)
+                return "Logged in."
             } else {
-                document.getElementById('tokenBox').value = data["message"]
+                return data["message"]
             }
-            console.log(loggedInControl)
         })
         .catch((error) => console.log(error))
-    }
+    })
 }
 
-// Getting the login button and assigning function to it.
+function getUserInfo (email) {
+    fetch( baseURL + "api/users", {
+        method: "GET",
+        headers: {"Authorization": "Bearer " + localStorage.getItem("token")},
+    })
+    .then((recieved) => {
+        return recieved.json()
+    })
+    .then((data) => {
+        let theUser = {}
+        data.forEach(element => {
+            if( email == element["email"]) {
+                theUser = element
+                localStorage.setItem("currentUser", theUser)
+            }
+        });
+        return data
+    })
+    .catch((error) => console.log(error))
+}
+
+async function runFetch(email, password) {
+    const promiseResult = userLogin(email, password);
+    if (promiseResult) {
+        getUserInfo(email)
+    }
+  }  
+
+// Getting the login button and assigning 'runFetch' function to it.
 document.addEventListener('DOMContentLoaded', function() {
   const loginButton = document.getElementById('loginButton');
   loginButton.addEventListener('click', function() {
-      submitButtonFunc();
+    runFetch(document.getElementById('emailInput').value, document.getElementById('passwordInput').value);
   });
 });
-
 
 // Olivers code ends here
 
