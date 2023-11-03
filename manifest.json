@@ -1,14 +1,14 @@
 {
-    "manifest_version": 3,
-    "name": "Time Tracker",
-    "version": "1.0",
-    "description": "Track time spent on the browser",
-    "permissions": ["tabs", "activeTab", "https://www.youtube.com/*"],
-    "background": {
-      "service_worker": "background.js"
-    },
-    "action": {
-      "default_popup": "popup.html",
-      "default_icon": "icon.png"
-    }
+  "manifest_version": 3,
+  "name": "Time Tracker",
+  "version": "1.0",
+  "description": "Track time spent on the browser",
+  "permissions": ["tabs", "activeTab"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
   }
+}
