@@ -65,6 +65,10 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
+// In order to login the function 'runFetch' can be called with the arguments 'email' and 'password'
+// If successful the token will be stored in local storage under 'token' and the user as an object under 'currentUser'
+
+
 // Olivers code ends here
 
 
