@@ -1,5 +1,9 @@
 const baseURL = "https://redesigned-umbrella-gwj6x9rqg9x3wqrx-3001.app.github.dev/"
 
+if (!localStorage.getItem("loggedIn")){
+    document.getElementById("hiddenOnStart").hidden = true
+}
+
 function sendSession (session) {
     
     // session = {
@@ -45,32 +49,47 @@ function updateSession (session)
 
 
 function userLogin (email, password) {
-    return new Promise((resolve) => {
-        let successCheck = false
-        fetch(baseURL + "api/token", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({email: email, password: password}),
+    if (localStorage.getItem("loggedIn")) {
+        console.log("LOGOUT")
+        localStorage.removeItem("loggedIn");
+        localStorage.setItem("token", null);
+        localStorage.removeItem("currentUserId")
+        localStorage.removeItem("currentUserName")
+        localStorage.removeItem("currentUserEmail")
+        localStorage.removeItem("currentSessionId")
+        document.getElementById("hiddenOnStart").hidden = true
+    } else {
+        return new Promise((resolve) => {
+            let successCheck = false
+            fetch(baseURL + "api/token", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({email: email, password: password}),
+            })
+            .then((recieved) => {
+                if (recieved.ok) {
+                    successCheck = true
+                } else {
+                    successCheck = false
+                }
+                return recieved.json()
+            })
+            .then((data) => {
+                if (successCheck) {
+                    console.log(data)
+                    localStorage.setItem("token", data["access_token"]);
+                    localStorage.setItem("loggedIn", true);
+                    document.getElementById("hiddenOnStart").hidden = false
+                    resolve(true)
+                    return "Logged in."
+                } else {
+                    return data["message"]
+                }
+            })
+            .catch((error) => console.log(error))
         })
-        .then((recieved) => {
-            if (recieved.ok) {
-                successCheck = true
-            } else {
-                successCheck = false
-            }
-            return recieved.json()
-        })
-        .then((data) => {
-            if (successCheck) {
-                localStorage.setItem("token", data["access_token"]);
-                resolve(true)
-                return "Logged in."
-            } else {
-                return data["message"]
-            }
-        })
-        .catch((error) => console.log(error))
-    })
+    }
+
 }
 
 function getUserInfo (email) {
@@ -79,6 +98,7 @@ function getUserInfo (email) {
         headers: {"Authorization": "Bearer " + localStorage.getItem("token")},
     })
     .then((recieved) => {
+        console.log(recieved)
         return recieved.json()
     })
     .then((data) => {
@@ -99,10 +119,8 @@ function getUserInfo (email) {
 }
 
 async function runFetch(email, password) {
-    const promiseResult = userLogin(email, password);
-    if (promiseResult) {
-        getUserInfo(email)
-    }
+    await userLogin(email, password);
+    await getUserInfo(email);
   }  
 
 // Getting the login button and assigning 'runFetch' function to it.
