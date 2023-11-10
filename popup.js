@@ -1,4 +1,48 @@
-const baseURL = "https://bug-free-dollop-94rw6v5767gfg64-3001.app.github.dev/"
+const baseURL = "https://redesigned-umbrella-gwj6x9rqg9x3wqrx-3001.app.github.dev/"
+
+function sendSession (session) {
+    
+    // session = {
+    //     "total_time" : 1000,
+    //     "work_time" : 600,
+    //     "fun_time" : 400
+    // }
+
+    session["current_user_id"] = localStorage.getItem("currentUserId")
+    console.log(session)
+    fetch(baseURL + "api/sessions", {
+        method: "POST",
+        headers: {"Content-Type": "application/json", "Authorization": "Bearer " + localStorage.getItem("token")},
+        body: JSON.stringify(session),
+    }).then((recieved) => {
+        return recieved.json()
+    }).then((data) => {
+        console.log(data)
+        localStorage.setItem("currentSessionId", data.id) // saves session ID to localstorage so we can update the same session later
+        return data
+    }).catch((error) => {
+        console.log(error)
+    })
+}
+
+function updateSession (session)
+ {
+    session["current_user_id"] = localStorage.getItem("currentUserId")
+    session["id"] = localStorage.getItem("currentSessionId")
+    fetch(baseURL + "api/sessions", {
+        method: "PUT",
+        headers: {"Content-Type": "application/json", "Authorization": "Bearer " + localStorage.getItem("token")},
+        body: JSON.stringify(session),
+    }).then((recieved) => {
+        return recieved.json()
+    }).then((data) => {
+        console.log(data)
+        return data
+    }).catch((error) => {
+        console.log(error)
+    })
+ }
+
 
 function userLogin (email, password) {
     return new Promise((resolve) => {
@@ -38,11 +82,15 @@ function getUserInfo (email) {
         return recieved.json()
     })
     .then((data) => {
-        let theUser = {}
+        console.log(data)
         data.forEach(element => {
+            console.log("EMAIL : " + email)
+            console.log("ELEMENT EMAIL : " + element["email"])
             if( email == element["email"]) {
-                theUser = element
-                localStorage.setItem("currentUser", theUser)
+                console.log(element)
+                localStorage.setItem("currentUserId", element["id"])
+                localStorage.setItem("currentUserName", element["name"])
+                localStorage.setItem("currentUserEmail", element["email"])
             }
         });
         return data
@@ -61,12 +109,32 @@ async function runFetch(email, password) {
 document.addEventListener('DOMContentLoaded', function() {
   const loginButton = document.getElementById('loginButton');
   loginButton.addEventListener('click', function() {
-    runFetch(document.getElementById('emailInput').value, document.getElementById('passwordInput').value);
+    runFetch(document.getElementById('emailInput').value, document.getElementById('passwordInput').value)
   });
 });
 
-// In order to login the function 'runFetch' can be called with the arguments 'email' and 'password'
-// If successful the token will be stored in local storage under 'token' and the user as an object under 'currentUser'
+//Getting test buttons
+document.addEventListener('DOMContentLoaded', function() {
+    const testButton = document.getElementById('testButton');
+    testButton.addEventListener('click', function() {
+      sendSession({
+        "total_time" : 1000,
+        "work_time" : 600,
+        "fun_time" : 400
+    });
+    });
+  });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const updateButton = document.getElementById('updateButton');
+    updateButton.addEventListener('click', function() {
+      updateSession({
+        "total_time" : 2000,
+        "work_time" : 1200,
+        "fun_time" : 800
+    });
+    });
+  });
 
 
 // Olivers code ends here
@@ -108,3 +176,4 @@ window.addEventListener('DOMContentLoaded', function () {
 function padNumber(num) {
   return num.toString().padStart(2, "0");
 }
+
