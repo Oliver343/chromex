@@ -1,16 +1,12 @@
 const baseURL = "https://redesigned-umbrella-gwj6x9rqg9x3wqrx-3001.app.github.dev/"
 
-if (!localStorage.getItem("loggedIn")){
+
+if (!localStorage.getItem("loggedIn")){ 
     document.getElementById("hiddenOnStart").hidden = true
+    document.getElementById("loginBox").hidden = false
 }
 
 function sendSession (session) {
-    
-    // session = {
-    //     "total_time" : 1000,
-    //     "work_time" : 600,
-    //     "fun_time" : 400
-    // }
 
     session["current_user_id"] = localStorage.getItem("currentUserId")
     console.log(session)
@@ -49,15 +45,17 @@ function updateSession (session)
 
 
 function userLogin (email, password) {
-    if (localStorage.getItem("loggedIn")) {
+    if (localStorage.getItem("loggedIn")) { 
         console.log("LOGOUT")
         localStorage.removeItem("loggedIn");
+        chrome.storage.local.remove("loggedIn").then((result) => console.log(result + " removed"));
         localStorage.setItem("token", null);
         localStorage.removeItem("currentUserId")
         localStorage.removeItem("currentUserName")
         localStorage.removeItem("currentUserEmail")
         localStorage.removeItem("currentSessionId")
         document.getElementById("hiddenOnStart").hidden = true
+        document.getElementById("loginBox").hidden = false
     } else {
         return new Promise((resolve) => {
             let successCheck = false
@@ -78,8 +76,12 @@ function userLogin (email, password) {
                 if (successCheck) {
                     console.log(data)
                     localStorage.setItem("token", data["access_token"]);
+                    chrome.storage.local.set({'token': data["access_token"]})
                     localStorage.setItem("loggedIn", true);
+                    chrome.storage.local.set({'loggedIn': true})
+                    chrome.storage.local.get('loggedIn').then((result) => console.log("Value currently is " + result.key))
                     document.getElementById("hiddenOnStart").hidden = false
+                    document.getElementById("loginBox").hidden = true
                     resolve(true)
                     return "Logged in."
                 } else {
@@ -109,6 +111,7 @@ function getUserInfo (email) {
             if( email == element["email"]) {
                 console.log(element)
                 localStorage.setItem("currentUserId", element["id"])
+                chrome.storage.local.set({'currentUserId': element["id"]})
                 localStorage.setItem("currentUserName", element["name"])
                 localStorage.setItem("currentUserEmail", element["email"])
             }
@@ -131,28 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-//Getting test buttons
-document.addEventListener('DOMContentLoaded', function() {
-    const testButton = document.getElementById('testButton');
-    testButton.addEventListener('click', function() {
-      sendSession({
-        "total_time" : 1000,
-        "work_time" : 600,
-        "fun_time" : 400
-    });
-    });
-  });
 
-document.addEventListener('DOMContentLoaded', function() {
-    const updateButton = document.getElementById('updateButton');
-    updateButton.addEventListener('click', function() {
-      updateSession({
-        "total_time" : 2000,
-        "work_time" : 1200,
-        "fun_time" : 800
-    });
-    });
-  });
 
 
 // Olivers code ends here
