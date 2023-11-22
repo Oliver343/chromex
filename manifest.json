@@ -3,9 +3,10 @@
   "name": "Time Tracker",
   "version": "1.0",
   "description": "Track time spent on the browser",
-  "permissions": ["tabs", "activeTab"],
+  "permissions": ["tabs", "activeTab", "storage"],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "action": {
     "default_popup": "popup.html",
