@@ -1,0 +1,20 @@
+/* * {
+    border: dashed red 1px;
+} */
+
+a {
+    color: white;
+    text-decoration: none;
+}
+
+a:hover {
+    color: rgb(195, 195, 195);
+}
+
+body {
+    width: 450px;
+}
+
+input {
+    width: 100%;
+}

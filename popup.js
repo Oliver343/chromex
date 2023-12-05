@@ -4,6 +4,11 @@ const baseURL = "https://redesigned-umbrella-gwj6x9rqg9x3wqrx-3001.app.github.de
 if (!localStorage.getItem("loggedIn")){ 
     document.getElementById("hiddenOnStart").hidden = true
     document.getElementById("loginBox").hidden = false
+    document.getElementById("loginButton").innerHTML = "Logout"
+} else {
+    document.getElementById("hiddenOnStart").hidden = false
+    document.getElementById("loginBox").hidden = true
+    document.getElementById("loginButton").innerHTML = "Login"
 }
 
 function sendSession (session) {
@@ -56,6 +61,7 @@ function userLogin (email, password) {
         localStorage.removeItem("currentSessionId")
         document.getElementById("hiddenOnStart").hidden = true
         document.getElementById("loginBox").hidden = false
+        document.getElementById("loginButton").innerHTML = "Login"
     } else {
         return new Promise((resolve) => {
             let successCheck = false
@@ -82,6 +88,7 @@ function userLogin (email, password) {
                     chrome.storage.local.get('loggedIn').then((result) => console.log("Value currently is " + result.key))
                     document.getElementById("hiddenOnStart").hidden = false
                     document.getElementById("loginBox").hidden = true
+                    document.getElementById("loginButton").innerHTML = "Logout"
                     resolve(true)
                     return "Logged in."
                 } else {
