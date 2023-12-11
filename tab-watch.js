@@ -1,4 +1,4 @@
-const baseURL = "https://redesigned-umbrella-gwj6x9rqg9x3wqrx-3001.app.github.dev/"
+const baseURL = "https://cautious-winner-5pj5v6rggx62vwrj-3001.app.github.dev/"
 
 let url
 let secs = 0
@@ -75,6 +75,8 @@ chrome.tabs.onActivated.addListener(function(activeInfo) {
         url = tabs[0].url;
         // use `url` here inside the callback because it's asynchronous!
         console.log(url)
+        console.log(tabs[0])
+
     });
     timer = setInterval(function(){
         secs++;

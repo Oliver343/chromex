@@ -1,14 +1,14 @@
-const baseURL = "https://redesigned-umbrella-gwj6x9rqg9x3wqrx-3001.app.github.dev/"
+const baseURL = "https://cautious-winner-5pj5v6rggx62vwrj-3001.app.github.dev/"
 
 
 if (!localStorage.getItem("loggedIn")){ 
     document.getElementById("hiddenOnStart").hidden = true
     document.getElementById("loginBox").hidden = false
-    document.getElementById("loginButton").innerHTML = "Logout"
+    document.getElementById("loginButton").innerHTML = "Login"
 } else {
     document.getElementById("hiddenOnStart").hidden = false
     document.getElementById("loginBox").hidden = true
-    document.getElementById("loginButton").innerHTML = "Login"
+    document.getElementById("loginButton").innerHTML = "Logout"
 }
 
 function sendSession (session) {
