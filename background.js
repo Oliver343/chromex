@@ -1,3 +1,5 @@
+import './tab-watch.js';
+
 var youtubeTime = 0;
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
